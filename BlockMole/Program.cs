@@ -1,5 +1,24 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using System.Text;
+
 Console.WriteLine("Hello, World!");
+
+bool TestForSequence(IEnumerable<byte> data)
+{
+    var iterator = data.GetEnumerator();
+
+    iterator.MoveNext();
+    var previous = iterator.Current;
+
+    while (iterator.MoveNext())
+    {
+        var next = iterator.Current;
+        if (previous != next - 1)
+            return false;
+        previous = next;
+    }
+    return true;
+}
 
 //
 // Build a matrix of cells where each cell knows its neighbours.
@@ -39,7 +58,7 @@ var routeList = GenerateRouteList(cellMatrix);
 
 //cellMatrix.ApplyData("ABCDEF");
 //cellMatrix.ApplyData("XBERECYQXNOP");
-cellMatrix.ApplyData("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123");
+cellMatrix.ApplyData(Encoding.UTF8.GetBytes("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123"));
 
 
 //
@@ -55,22 +74,19 @@ foreach (var cell in cellMatrix.CellList)
     Console.WriteLine();
 }
 
-
-// Print all the routes. Impractical for more than about 3x2
-
-foreach (Route route in routeList)
-{
-    foreach (var routeCell in route)
-    {
-        Console.Write(routeCell.Data);
-    }
-    Console.WriteLine();
-}
-
 //
 // Print the number of routes.
 //
 Console.WriteLine($"Count : {routeList.Count}");
+
+// Print all the routes. Impractical for more than about 3x2
+
+//foreach (Route route in routeList)
+//{
+//    Console.WriteLine(route.ToString());
+//}
+
+
 
 
 
@@ -90,75 +106,55 @@ Console.WriteLine($"Looking for n, n+1, n+2 ... ");
 
 foreach (var route in routeList)
 {
-    if (SequenceRule
-        (
-        route,
-        (route) => route.Count > 5,
-        (route, index) => index == 0 || route[index-1].Data == route[index].Data - 1
-))
-        results.Add(route);
+    if(route.Length > 4)
+    {
+        IEnumerable<byte> data = route.GetRouteData();
+
+        if (TestForSequence(data) == true)
+            results.Add(route);
+    }
 }
 
 
 foreach (Route route in results)
 {
-    foreach (var routeCell in route)
-    {
-        Console.Write(routeCell.Data);
-    }
-    Console.WriteLine();
+    Console.WriteLine(Encoding.UTF8.GetString(route.GetRouteData().ToArray()));
 }
 
 Console.WriteLine($"Looking for BEYONCE ... ");
 
 foreach (var route in routeList)
 {
-    if (SequenceRule
-        (
-        route,
-        (route) => route.Count == 7,
-        (route, index) => route[index].Data == "BEYONCE"[index]
-))
-        results.Add(route);
+    byte[] matchData = Encoding.UTF8.GetBytes("CDJPONHBAGM");
+
+    if (route.Length == matchData.Length)
+    {
+        byte[] data = route.GetRouteData();
+
+        if (TestForMatch(data, matchData) == true)
+            results.Add(route);
+    }
 }
 
+bool TestForMatch(byte[] data, byte[] matchData)
+{
+    if (data.Length != matchData.Length)
+        return false;
+
+    for (int i = 0; i < data.Length; i++)
+        if (data[i] != matchData[i])
+            return false;
+
+    return true;
+}
 
 foreach (Route route in results)
 {
-    foreach (var routeCell in route)
-    {
-        Console.Write(routeCell.Data);
-    }
-    Console.WriteLine();
+    Console.WriteLine(Encoding.UTF8.GetString(route.GetRouteData().ToArray()));
 }
 
 
 
-
-// Search for 'Beyonce'. If found, sell it to her.
-
-bool SequenceRule(Route route, Func<Route, bool> routePredicate, Func<Route, int, bool> sequenceBuilderPredicate)
-{
-    // routePredicate:
-    // Given a route, can we trivially reject it?
-    // e.g. Route.Length == 5
-    // e.g. Route.Length < 5
-
-    // sequenceBuilderPredicate(route, index):
-    // Decides if the cell at 'index' satisfies the requirements for the sequence we're looking for,
-    // where sequenceBuilderPredicate may *not* retain state.
-    // ... is this limiting?
-
-    if (routePredicate(route) == false)
-        return false;
-
-    for (int index = 0; index < route.Count; index++)
-        if (sequenceBuilderPredicate(route, index) == false)
-            return false;
-
-    // We have a match!
-    return true;
-}
 
 
 
@@ -170,7 +166,7 @@ List<Route> GenerateRouteList(CellMatrix matrix)
     var retval = new List<Route>();
 
     foreach (var cell in matrix.CellList)
-        GetRoutes(cell, matrix, retval);
+        GetRoutes(null, cell, retval);
 
     return retval;
 }
@@ -178,10 +174,11 @@ List<Route> GenerateRouteList(CellMatrix matrix)
 //
 // 
 //
-void GetRoutes(Cell cell, CellMatrix matrix, List<Route> routeList)
+void GetRoutes(Route route, Cell cell, List<Route> routeList)
 {
+    var thisRoute = new Route(route, cell);
     // Add this cell's route to the results.
-    routeList.Add(GetCellRoute(cell));
+    routeList.Add(thisRoute);
 
     foreach (var nextCellCandidate in cell.Neighbours)
     {
@@ -190,22 +187,9 @@ void GetRoutes(Cell cell, CellMatrix matrix, List<Route> routeList)
         {
             cell.Next = nextCellCandidate;
             nextCellCandidate.Previous = cell;
-            GetRoutes(nextCellCandidate, matrix, routeList);
+            GetRoutes(thisRoute, nextCellCandidate, routeList);
             cell.Next = null;
             nextCellCandidate.Previous = null;
         }
     }
-}
-
-Route GetCellRoute(Cell cell)
-{
-    var route = new Route();
-
-    var nextCell = cell;
-    while (nextCell != null)
-    {
-        route.Add(nextCell);
-        nextCell = nextCell.Previous;
-    }
-    return route;
 }

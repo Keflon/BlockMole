@@ -19,7 +19,7 @@ internal class Cell
     /// As the inverse of this route will also be present in the results the order doesn't matter.
     /// </summary>
     public Cell Previous { get; set; }
-    public char Data { get; set; }
+    public byte Data { get; set; }
 
     internal void SetNeighbours(List<Cell> neighbours)
     {

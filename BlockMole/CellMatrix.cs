@@ -5,13 +5,10 @@ internal class CellMatrix
     {
         Width = width;
         Height = height;
-        //Data = data;
 
         var cellList = new List<Cell>();
 
         // Create (width x height) cells where ach cell contains a unit of data and store them in cellList ...
-        int cellIndex = 0;
-
         for (int y = 0; y < Height; y++)
             for (int x = 0; x < Width; x++)
                 cellList.Add(new Cell());
@@ -44,7 +41,7 @@ internal class CellMatrix
         CellList = cellList;
     }
 
-    public void ApplyData(string data)
+    public void ApplyData(byte[] data)
     {
         if (Width * Height != data.Length)
             throw new InvalidOperationException("data length must equal Width*Height");
@@ -56,6 +53,5 @@ internal class CellMatrix
 
     public int Width { get; }
     public int Height { get; }
-    //public string Data { get; }
     public IEnumerable<Cell> CellList { get; }
 }
