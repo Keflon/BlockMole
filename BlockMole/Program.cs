@@ -211,18 +211,44 @@ foreach (Route route in results)
 }
 
  Console.WriteLine($"Looking for BEYONCE ... ");
+byte[] matchData = Encoding.UTF8.GetBytes("CDJPONHBAGM");
+
+//foreach (var route in routeList)
+//{
+//    if (route.Length == matchData.Length)
+//    {
+//        byte[] data = route.GetRouteData();
+
+//        if (TestForMatch(data, matchData) == true)
+//            results.Add(route);
+//    }
+//}
+
 
 foreach (var route in routeList)
 {
-    byte[] matchData = Encoding.UTF8.GetBytes("CDJPONHBAGM");
-
     if (route.Length == matchData.Length)
     {
-        byte[] data = route.GetRouteData();
+        var iterator = route.GetRouteData3();
 
-        if (TestForMatch(data, matchData) == true)
+        if (TestForMatch2(iterator, matchData) == true)
             results.Add(route);
+
+        //if (TestForMatch(data, matchData) == true)
+        //    results.Add(route);
     }
+}
+
+bool TestForMatch2(IEnumerator<byte> iterator, byte[] matchData)
+{
+    int index = 0;
+
+    while (iterator.MoveNext())
+    {
+        if (iterator.Current != matchData[index++])
+            return false;
+    }
+    return true;
 }
 
 bool TestForMatch(byte[] data, byte[] matchData)

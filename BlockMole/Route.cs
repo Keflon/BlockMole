@@ -7,13 +7,12 @@ internal class Route
     {
         Head = head;
         Tail = tail;
-
-        //Length = (head?.Length ?? 0) + 1;
+        Length = (short)((head?.Length ?? 0) + 1);
     }
 
-    //public int Length { get; }
+    public short Length { get; }
 
-    public int Length => (Head?.Length ?? 0) + 1;
+    //public int Length => (Head?.Length ?? 0) + 1;
 
     public Route Head { get; }
     public Cell Tail { get; }
@@ -55,7 +54,6 @@ internal class Route
         while (current != null)
         {
             yield return current.Tail.Data;
-            //buffer[index++] = current.Tail.Data;
             current = current.Head;
         }
     }
