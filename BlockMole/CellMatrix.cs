@@ -33,7 +33,7 @@ internal class CellMatrix
                 if (x < Width - 1)
                     neighbours.Add(cellList[index + 1]);      // Right one
 
-                cellList[index].SetNeighbours(neighbours);
+                cellList[index].Neighbours = neighbours;
 
                 index++;
             }

@@ -8,10 +8,12 @@ internal class Route
         Head = head;
         Tail = tail;
 
-        Length = (head?.Length ?? 0) + 1;
+        //Length = (head?.Length ?? 0) + 1;
     }
 
-    public int Length { get; }
+    //public int Length { get; }
+
+    public int Length => (Head?.Length ?? 0) + 1;
 
     public Route Head { get; }
     public Cell Tail { get; }
@@ -30,5 +32,19 @@ internal class Route
             current = current.Head;
         }
         return result;
+    }
+
+    internal int GetRouteData2(byte[] buffer)
+    {
+        int index = 0;
+
+        var current = this;
+
+        while (current != null)
+        {
+            buffer[index++] = current.Tail.Data;
+            current = current.Head;
+        }
+        return index;
     }
 }

@@ -3,20 +3,52 @@ using System.Text;
 
 Console.WriteLine("Hello, World!");
 
-bool TestForSequence(IEnumerable<byte> data)
+bool TestForSequence(byte[] data)
 {
-    var iterator = data.GetEnumerator();
+    //int d = 0;
+    //for (int c = 1; c < data.Length; c++)
+    //    if (data[c] != data[d++] + 1)
+    //        return false;
 
-    iterator.MoveNext();
-    var previous = iterator.Current;
+    //return true;
 
-    while (iterator.MoveNext())
+
+    byte lastData = data[0];
+    for (int c = 1; c < data.Length; c++)
     {
-        var next = iterator.Current;
-        if (previous != next - 1)
+        if (data[c] != lastData + 1)
             return false;
-        previous = next;
+        lastData = data[c];
     }
+
+    return true;
+
+
+    //var iterator = ((IEnumerable<byte>)data).GetEnumerator();
+
+    //iterator.MoveNext();
+    //var previous = iterator.Current;
+
+    //while (iterator.MoveNext())
+    //{
+    //    var next = iterator.Current;
+    //    if (previous != next - 1)
+    //        return false;
+    //    previous = next;
+    //}
+    //return true;
+}
+
+bool TestForSequence2(byte[] data, int count)
+{
+    byte lastData = data[0];
+    for (int c = 1; c < count; c++)
+    {
+        if (data[c] != lastData + 1)
+            return false;
+        lastData = data[c];
+    }
+
     return true;
 }
 
@@ -104,24 +136,44 @@ var results = new List<Route>();
 
 Console.WriteLine($"Looking for n, n+1, n+2 ... ");
 
+
+#if old
 foreach (var route in routeList)
 {
     if(route.Length > 4)
     {
-        IEnumerable<byte> data = route.GetRouteData();
+        byte[] data = route.GetRouteData();
 
         if (TestForSequence(data) == true)
             results.Add(route);
     }
 }
+#else
 
+byte[] buffer = new byte[30];
+
+foreach (var route in routeList)
+{
+    if (route.Length > 4)
+    {
+        int count = route.GetRouteData2(buffer);
+
+        if (TestForSequence2(buffer, count) == true)
+            results.Add(route);
+    }
+}
+
+
+
+
+#endif
 
 foreach (Route route in results)
 {
     Console.WriteLine(Encoding.UTF8.GetString(route.GetRouteData().ToArray()));
 }
 
-Console.WriteLine($"Looking for BEYONCE ... ");
+ Console.WriteLine($"Looking for BEYONCE ... ");
 
 foreach (var route in routeList)
 {
@@ -183,13 +235,11 @@ void GetRoutes(Route route, Cell cell, List<Route> routeList)
     foreach (var nextCellCandidate in cell.Neighbours)
     {
         // If the cell isn't already part of a route ...
-        if (nextCellCandidate.Next == null)
+        if (nextCellCandidate.IsInCurrentRoute == false)
         {
-            cell.Next = nextCellCandidate;
-            nextCellCandidate.Previous = cell;
+            cell.IsInCurrentRoute = true;
             GetRoutes(thisRoute, nextCellCandidate, routeList);
-            cell.Next = null;
-            nextCellCandidate.Previous = null;
+            cell.IsInCurrentRoute = false;
         }
     }
 }
