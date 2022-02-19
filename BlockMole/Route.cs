@@ -47,4 +47,16 @@ internal class Route
         }
         return index;
     }
+
+    internal IEnumerator<byte> GetRouteData3()
+    {
+        var current = this;
+
+        while (current != null)
+        {
+            yield return current.Tail.Data;
+            //buffer[index++] = current.Tail.Data;
+            current = current.Head;
+        }
+    }
 }

@@ -52,6 +52,32 @@ bool TestForSequence2(byte[] data, int count)
     return true;
 }
 
+bool TestForSequence3(IEnumerator<byte> enumerator)
+{
+    enumerator.MoveNext();
+    var lastData = enumerator.Current;
+
+    while(enumerator.MoveNext())
+    {
+        var nextData = enumerator.Current;
+        if (lastData + 1 != nextData)
+            return false;
+
+        lastData = nextData;
+    }
+    return true;
+
+    //byte lastData = data[0];
+    //for (int c = 1; c < count; c++)
+    //{
+    //    if (data[c] != lastData + 1)
+    //        return false;
+    //    lastData = data[c];
+    //}
+
+    //return true;
+}
+
 //
 // Build a matrix of cells where each cell knows its neighbours.
 // Ideally the width and height and data will be command-line parameters
@@ -148,7 +174,7 @@ foreach (var route in routeList)
             results.Add(route);
     }
 }
-#else
+#elif old
 
 byte[] buffer = new byte[30];
 
@@ -163,7 +189,18 @@ foreach (var route in routeList)
     }
 }
 
+#else
 
+foreach (var route in routeList)
+{
+    if (route.Length > 4)
+    {
+        var iterator = route.GetRouteData3();
+
+        if (TestForSequence3(iterator) == true)
+            results.Add(route);
+    }
+}
 
 
 #endif
