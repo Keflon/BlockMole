@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32113.165
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockMole", "BlockMole\BlockMole.csproj", "{97AA22CC-1CEE-4CE7-BC59-8784A5A9FA93}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{97AA22CC-1CEE-4CE7-BC59-8784A5A9FA93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97AA22CC-1CEE-4CE7-BC59-8784A5A9FA93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97AA22CC-1CEE-4CE7-BC59-8784A5A9FA93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97AA22CC-1CEE-4CE7-BC59-8784A5A9FA93}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8C1EECAD-9951-49B8-8114-8505748DEC63}
+	EndGlobalSection
+EndGlobal
