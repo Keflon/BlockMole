@@ -1,11 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 internal class Cell
 {
-    public Cell()
-    {
-        //Data = data;
-    }
-
     public List<Cell> Neighbours { get; set; }
 
     /// <summary>

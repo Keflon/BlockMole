@@ -1,7 +1,9 @@
 ﻿// See https://aka.ms/new-console-template for more information
+nmusing System.Diagnostics;
 using System.Text;
 
 Console.WriteLine("Hello, World!");
+int _theCount = 0;
 
 bool TestForSequence(byte[] data)
 {
@@ -91,12 +93,16 @@ var cellMatrix = new CellMatrix(6, 5);
 //var cellMatrix = new CellMatrix(5, 4, "ABCDEFGHIJKLMNOPQRST");
 //var cellMatrix = new CellMatrix(6, 5, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123");
 
+
+var sw = new Stopwatch();
+sw.Start();
 //
 // Build a list of routes through the cell matrix. 
 //
 var routeList = GenerateRouteList(cellMatrix);
 
-
+sw.Stop();
+Console.WriteLine($"Time taken: {sw.Elapsed.TotalSeconds}, Count: {_theCount}");
 
 // NOTES: Every route is a 'route' plus a 'cell', assuming a route can be empty.
 // Use this to massively optimise any search performance done during route-generation.
@@ -295,6 +301,20 @@ void GetRoutes(Route route, Cell cell, List<Route> routeList)
     // Add this cell's route to the results.
     routeList.Add(thisRoute);
 
+
+
+    // Instead of adding the route, test the route against our predicates.
+    // We can quickly know:
+    // cell data
+    // last cell data
+    // cell index
+    // last cell index (obviously)
+    // Predicates can maintain state, meaning
+    // we can test for a string match by iterating over the match-string and comparing to cell[data]
+
+
+
+    _theCount++;
     foreach (var nextCellCandidate in cell.Neighbours)
     {
         // If the cell isn't already part of a route ...
