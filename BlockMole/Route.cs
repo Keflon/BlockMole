@@ -9,11 +9,7 @@ internal class Route
         Tail = tail;
         Length = (short)((head?.Length ?? 0) + 1);
     }
-
     public short Length { get; }
-
-    //public int Length => (Head?.Length ?? 0) + 1;
-
     public Route Head { get; }
     public Cell Tail { get; }
 
@@ -22,7 +18,6 @@ internal class Route
         var result = new byte[Length];
 
         int index = 0;
-
         var current = this;
 
         while(current != null)
@@ -33,21 +28,7 @@ internal class Route
         return result;
     }
 
-    internal int GetRouteData2(byte[] buffer)
-    {
-        int index = 0;
-
-        var current = this;
-
-        while (current != null)
-        {
-            buffer[index++] = current.Tail.Data;
-            current = current.Head;
-        }
-        return index;
-    }
-
-    internal IEnumerator<byte> GetRouteData3()
+    internal IEnumerator<byte> GetRouteDataEnumerator()
     {
         var current = this;
 

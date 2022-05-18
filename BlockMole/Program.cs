@@ -1,60 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
-nmusing System.Diagnostics;
+using System.Diagnostics;
 using System.Text;
 
 Console.WriteLine("Hello, World!");
 int _theCount = 0;
 
-bool TestForSequence(byte[] data)
-{
-    //int d = 0;
-    //for (int c = 1; c < data.Length; c++)
-    //    if (data[c] != data[d++] + 1)
-    //        return false;
-
-    //return true;
-
-
-    byte lastData = data[0];
-    for (int c = 1; c < data.Length; c++)
-    {
-        if (data[c] != lastData + 1)
-            return false;
-        lastData = data[c];
-    }
-
-    return true;
-
-
-    //var iterator = ((IEnumerable<byte>)data).GetEnumerator();
-
-    //iterator.MoveNext();
-    //var previous = iterator.Current;
-
-    //while (iterator.MoveNext())
-    //{
-    //    var next = iterator.Current;
-    //    if (previous != next - 1)
-    //        return false;
-    //    previous = next;
-    //}
-    //return true;
-}
-
-bool TestForSequence2(byte[] data, int count)
-{
-    byte lastData = data[0];
-    for (int c = 1; c < count; c++)
-    {
-        if (data[c] != lastData + 1)
-            return false;
-        lastData = data[c];
-    }
-
-    return true;
-}
-
-bool TestForSequence3(IEnumerator<byte> enumerator)
+bool TestForSequence(IEnumerator<byte> enumerator)
 {
     enumerator.MoveNext();
     var lastData = enumerator.Current;
@@ -68,16 +19,6 @@ bool TestForSequence3(IEnumerator<byte> enumerator)
         lastData = nextData;
     }
     return true;
-
-    //byte lastData = data[0];
-    //for (int c = 1; c < count; c++)
-    //{
-    //    if (data[c] != lastData + 1)
-    //        return false;
-    //    lastData = data[c];
-    //}
-
-    //return true;
 }
 
 //
@@ -86,13 +27,7 @@ bool TestForSequence3(IEnumerator<byte> enumerator)
 // and data will be a byte stream rather than a string.
 //
 
-//var cellMatrix = new CellMatrix(3, 2);
-//var cellMatrix = new CellMatrix(4, 3);
 var cellMatrix = new CellMatrix(6, 5);
-//var cellMatrix = new CellMatrix(3, 2, "ABCDEF");
-//var cellMatrix = new CellMatrix(5, 4, "ABCDEFGHIJKLMNOPQRST");
-//var cellMatrix = new CellMatrix(6, 5, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123");
-
 
 var sw = new Stopwatch();
 sw.Start();
@@ -107,11 +42,6 @@ Console.WriteLine($"Time taken: {sw.Elapsed.TotalSeconds}, Count: {_theCount}");
 // NOTES: Every route is a 'route' plus a 'cell', assuming a route can be empty.
 // Use this to massively optimise any search performance done during route-generation.
 // Use this to massively optimise any memory pressure when storing 'all' routes.
-   
-
-
-
-
 
 
 // NOTES: We now have all the routes through the matrix, from any starting point.
@@ -119,21 +49,22 @@ Console.WriteLine($"Time taken: {sw.Elapsed.TotalSeconds}, Count: {_theCount}");
 // Each route is a linked list of cells, so it can be queried for any sort of match
 // e.g. a fixed pattern such as 'LEET' or a sequence such as ((next == previous+1) AND patternlength > 5)
 
-
-//cellMatrix.ApplyData("ABCDEF");
-//cellMatrix.ApplyData("XBERECYQXNOP");
-cellMatrix.ApplyData(Encoding.UTF8.GetBytes("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123"));
-
+cellMatrix.ApplyData(Encoding.UTF8.GetBytes(
+    "ABCDEF" +
+    "GHIJKL" +
+    "MNOPQR" +
+    "STUVWX" +
+    "YZ0123"));
 
 //
 // Print each cell's data along with the data of its neighbours.
 //
 foreach (var cell in cellMatrix.CellList)
 {
-    Console.Write($"{cell.Data}:");
+    Console.Write($"{(char)cell.Data} has neighbours:");
 
     foreach (var neighbour in cell.Neighbours)
-        Console.Write($"{neighbour.Data}");
+        Console.Write($"{(char)neighbour.Data}");
 
     Console.WriteLine();
 }
@@ -151,14 +82,11 @@ Console.WriteLine($"Count : {routeList.Count}");
 //}
 
 
-
-
-
 //
 // Now find something
 //
 
-// Look for a 'function based' pattern. run > 3 and index[n+1] = index[n] + 1, i.e. (1, 2, 3, 4 ...), (2, 3, 4, 5 ...), (3, 4, 5, 6 ...)
+// Look for a 'function based' pattern. run > 4 and index[n+1] = index[n] + 1, i.e. (1, 2, 3, 4, 5 ...), (2, 3, 4, 5, 6 ...), (3, 4, 5, 6, 7 ...)
 
 //var rules = new List<Func<Route, bool>>();
 
@@ -166,50 +94,18 @@ Console.WriteLine($"Count : {routeList.Count}");
 
 var results = new List<Route>();
 
-Console.WriteLine($"Looking for n, n+1, n+2 ... ");
-
-
-#if old
-foreach (var route in routeList)
-{
-    if(route.Length > 4)
-    {
-        byte[] data = route.GetRouteData();
-
-        if (TestForSequence(data) == true)
-            results.Add(route);
-    }
-}
-#elif old
-
-byte[] buffer = new byte[30];
+Console.WriteLine($"Looking for n, n+1, n+2 where sequence length > 4 ... ");
 
 foreach (var route in routeList)
 {
     if (route.Length > 4)
     {
-        int count = route.GetRouteData2(buffer);
+        var iterator = route.GetRouteDataEnumerator();
 
-        if (TestForSequence2(buffer, count) == true)
+        if (TestForSequence(iterator) == true)
             results.Add(route);
     }
 }
-
-#else
-
-foreach (var route in routeList)
-{
-    if (route.Length > 4)
-    {
-        var iterator = route.GetRouteData3();
-
-        if (TestForSequence3(iterator) == true)
-            results.Add(route);
-    }
-}
-
-
-#endif
 
 foreach (Route route in results)
 {
@@ -217,35 +113,30 @@ foreach (Route route in results)
 }
 
  Console.WriteLine($"Looking for BEYONCE ... ");
-byte[] matchData = Encoding.UTF8.GetBytes("CDJPONHBAGM");
 
-//foreach (var route in routeList)
-//{
-//    if (route.Length == matchData.Length)
-//    {
-//        byte[] data = route.GetRouteData();
+cellMatrix.ApplyData(Encoding.UTF8.GetBytes(
+    "xBExxx" +
+    "xxYxxx" +
+    "CNOxxx" +
+    "Exxxxx" +
+    "xxxxxx"));
 
-//        if (TestForMatch(data, matchData) == true)
-//            results.Add(route);
-//    }
-//}
+results.Clear();
 
+byte[] matchData = Encoding.UTF8.GetBytes("BEYONCE");
 
 foreach (var route in routeList)
 {
     if (route.Length == matchData.Length)
     {
-        var iterator = route.GetRouteData3();
+        var iterator = route.GetRouteDataEnumerator();
 
-        if (TestForMatch2(iterator, matchData) == true)
+        if (TestForMatch(iterator, matchData) == true)
             results.Add(route);
-
-        //if (TestForMatch(data, matchData) == true)
-        //    results.Add(route);
     }
 }
 
-bool TestForMatch2(IEnumerator<byte> iterator, byte[] matchData)
+bool TestForMatch(IEnumerator<byte> iterator, byte[] matchData)
 {
     int index = 0;
 
@@ -257,26 +148,10 @@ bool TestForMatch2(IEnumerator<byte> iterator, byte[] matchData)
     return true;
 }
 
-bool TestForMatch(byte[] data, byte[] matchData)
-{
-    if (data.Length != matchData.Length)
-        return false;
-
-    for (int i = 0; i < data.Length; i++)
-        if (data[i] != matchData[i])
-            return false;
-
-    return true;
-}
-
 foreach (Route route in results)
 {
     Console.WriteLine(Encoding.UTF8.GetString(route.GetRouteData().ToArray()));
 }
-
-
-
-
 
 
 //
@@ -301,8 +176,6 @@ void GetRoutes(Route route, Cell cell, List<Route> routeList)
     // Add this cell's route to the results.
     routeList.Add(thisRoute);
 
-
-
     // Instead of adding the route, test the route against our predicates.
     // We can quickly know:
     // cell data
@@ -311,8 +184,6 @@ void GetRoutes(Route route, Cell cell, List<Route> routeList)
     // last cell index (obviously)
     // Predicates can maintain state, meaning
     // we can test for a string match by iterating over the match-string and comparing to cell[data]
-
-
 
     _theCount++;
     foreach (var nextCellCandidate in cell.Neighbours)

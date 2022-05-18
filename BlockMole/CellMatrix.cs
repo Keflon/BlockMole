@@ -8,7 +8,7 @@ internal class CellMatrix
 
         var cellList = new List<Cell>();
 
-        // Create (width x height) cells where ach cell contains a unit of data and store them in cellList ...
+        // Create (width x height) cells where each cell contains a unit of data and store them in cellList ...
         for (int y = 0; y < Height; y++)
             for (int x = 0; x < Width; x++)
                 cellList.Add(new Cell());
